@@ -1,1 +1,1 @@
-web: make start PORT=$PORT
+web: make start-dev PORT=$PORT
