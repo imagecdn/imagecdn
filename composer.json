@@ -34,7 +34,8 @@
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "^2.0",
         "php-pm/php-pm": "dev-master",
-        "php-pm/httpkernel-adapter": "dev-master"
+        "php-pm/httpkernel-adapter": "dev-master",
+        "liip/imagine-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
