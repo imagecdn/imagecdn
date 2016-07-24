@@ -1,0 +1,15 @@
+{
+    "bridge": "HttpKernel",
+    "host": "127.0.0.1",
+    "port": 8080,
+    "workers": 8,
+    "app-env": "dev",
+    "debug": 1,
+    "logging": 1,
+    "static": true,
+    "bootstrap": "symfony",
+    "max-requests": 1000,
+    "concurrent-requests": false,
+    "socket-path": ".ppm\/run\/",
+    "cgi-path": "php-cgi"
+}

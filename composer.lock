@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f1413605bf7160075a373588ea1ac265",
-    "content-hash": "bffdc1d4b85a7b1b3bd5116166f7f4cf",
+    "hash": "b51734192aa90915b7c6542a9db423a1",
+    "content-hash": "dc44033264cb98b80da748f9350c8af6",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1146,6 +1146,34 @@
                 "random"
             ],
             "time": "2016-04-03 06:00:07"
+        },
+        {
+            "name": "php-pm/httpkernel-adapter",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-pm/php-pm-httpkernel.git",
+                "reference": "4754a51f399a058a5a152ef60d143134a8b04626"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-pm/php-pm-httpkernel/zipball/4754a51f399a058a5a152ef60d143134a8b04626",
+                "reference": "4754a51f399a058a5a152ef60d143134a8b04626",
+                "shasum": ""
+            },
+            "require": {
+                "php-pm/php-pm": "dev-master",
+                "symfony/http-foundation": "^2.6|^3.0",
+                "symfony/http-kernel": "^2.6|^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPPM\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "time": "2016-06-27 11:09:24"
         },
         {
             "name": "php-pm/php-pm",
@@ -2634,9 +2662,10 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "php-pm/php-pm": 20
+        "php-pm/php-pm": 20,
+        "php-pm/httpkernel-adapter": 20
     },
-    "prefer-stable": true,
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=5.5.9"
