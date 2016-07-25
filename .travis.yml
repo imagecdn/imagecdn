@@ -1,0 +1,38 @@
+language: php
+
+php:
+  - 5.6
+  - 7
+  - hhvm
+
+matrix:
+    allow_failures:
+        - php: hhvm
+
+# test only master (+ Pull requests)
+branches:
+  only:
+    - master
+
+# setup requirements for running unit tests
+before_script:
+  # Disable xdebug to speed things up as we don't currently generate coverage on travis
+  - if [ $TRAVIS_PHP_VERSION != "hhvm" ]; then phpenv config-rm xdebug.ini ; fi
+  # Increase PHP memory limit.
+  - if [ $TRAVIS_PHP_VERSION != "hhvm" ]; then echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini ; fi
+  # Setup github key to avoid api rate limit
+  - .travis/composer_install_github_key.sh
+  # Install packages using composer
+  - composer install --no-progress --no-interaction --prefer-dist
+
+# execute phpunit as the script command
+script:
+  - make test
+
+# disable mail notifications
+notification:
+  email: false
+
+# reduce depth (history) of git checkout
+git:
+  depth: 30
