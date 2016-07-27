@@ -12,6 +12,8 @@ RUN apk --update add autoconf automake build-base libtool nasm curl libpng libpn
   && docker-php-ext-install gd pcntl exif \
   && pecl install imagick \
   && docker-php-ext-enable imagick \
+  && curl -sS https://getcomposer.org/installer | php \
+  && mv composer.phar /usr/bin/composer \
   && rm -rf /var/cache/apk/*
 
 ADD . /srv/image-service
@@ -19,8 +21,7 @@ WORKDIR /srv/image-service
 
 RUN sh ./build/install-mozjpeg.sh \
     && sh ./build/install-pngquant.sh \
-    && curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/bin/composer \
-    && composer install -o
+
+RUN composer install -o
 
 CMD ["make", "start"]
