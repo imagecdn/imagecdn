@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+ext="$1"
+if [ -z "$ext" ] || ! grep -qE "^$ext$" /usr/src/php-available-exts; then
+	echo >&2 "usage: $0 ext-name [configure flags]"
+	echo >&2 "   ie: $0 gd --with-jpeg-dir=/usr/local/something"
+	echo >&2
+	echo >&2 'Possible values for ext-name:'
+	echo $(cat /usr/src/php-available-exts)
+	exit 1
+fi
+shift
+
+pm='unknown'
+if [ -e /lib/apk/db/installed ]; then
+	pm='apk'
+fi
+
+if [ "$pm" = 'apk' ]; then
+	if \
+		[ -n "$PHPIZE_DEPS" ] \
+		&& ! apk info --installed .phpize-deps > /dev/null \
+		&& ! apk info --installed .phpize-deps-configure > /dev/null \
+	; then
+		apk add --no-cache --virtual .phpize-deps-configure $PHPIZE_DEPS
+	fi
+fi
+
+docker-php-source extract
+
+set -x
+cd "/usr/src/php/ext/$ext"
+phpize
+./configure "$@"
