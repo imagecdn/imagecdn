@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0bd1056fe50837733502ae5eed6cc906",
-    "content-hash": "27ef83f6c9d1551c3a8fcc496e04222c",
+    "hash": "b89adfe247b04f7bf6bee7994a733a65",
+    "content-hash": "ebf397471813f01ff56c46ee1aed6961",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1317,7 +1317,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-pm/php-pm/zipball/19164bdde107f0e724e22fe9791ceaf07bc35b65",
+                "url": "https://api.github.com/repos/php-pm/php-pm/zipball/65e4f80dced89ef4a82a95b74de873bdecef3bfd",
                 "reference": "19164bdde107f0e724e22fe9791ceaf07bc35b65",
                 "shasum": ""
             },
@@ -3995,7 +3995,6 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=5.5.9",
-        "ext-gd": "*",
         "ext-imagick": "*",
         "ext-exif": "*"
     },

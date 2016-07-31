@@ -23,7 +23,6 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "ext-gd": "*",
         "ext-imagick": "*",
         "ext-exif": "*",
         "symfony/symfony": "3.1.*",
