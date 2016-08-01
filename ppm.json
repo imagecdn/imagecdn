@@ -10,6 +10,6 @@
     "bootstrap": "symfony",
     "max-requests": 1000,
     "concurrent-requests": true,
-    "socket-path": ".ppm\/run\/",
+    "socket-path": "\/tmp\/",
     "cgi-path": "php-cgi"
 }
