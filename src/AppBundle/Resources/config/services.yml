@@ -1,0 +1,5 @@
+services:
+    responsive_images.stream_loader:
+        class: "%liip_imagine.binary.loader.stream.class%"
+        arguments: ['']
+        tags: [{ name: 'liip_imagine.binary.loader', loader: 'stream_loader' }]
