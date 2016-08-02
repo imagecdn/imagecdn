@@ -13,10 +13,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ImageController extends Controller
 {
     /**
-     * @Route("/v1/images/{uri}", name="images")
+     * @Route("/v1/images/{uri}", name="images", requirements={"uri" = ".*"})
      */
-    public function imageAction(Request $request)
+    public function imageAction(Request $request, $uri = null)
     {
+        if ($uri === null) {
+            throw new HttpException(503, "No image found!");
+        }
+        $uri = urldecode($uri);
+
         $filterManager = $this->get('liip_imagine.filter.manager');
         $dataManager = $this->get('liip_imagine.data.manager');
 
@@ -40,14 +45,11 @@ class ImageController extends Controller
         ]);
 
         try {
-            if (!$request->has('uri')) {
-                throw new Exception('No image found!');
-            }
-            $binary = $dataManager->find('test', urldecode($request->get('uri')));
-        } catch (Exception $e) {
-            throw new HttpException(503, $e->getMessage());
+            $binary = $dataManager->find('test', $uri);
         } catch (NotLoadableException $e) {
             throw new NotFoundHttpException('Source image could not be found', $e);
+        } catch (Exception $e) {
+            throw new HttpException(503, $e->getMessage());
         }
 
         $binary = $filterManager->applyFilter($binary, 'test', []);
