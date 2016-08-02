@@ -35,7 +35,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
      */
     public function prepend(ContainerBuilder $container)
     {
-        foreach (['liip_imagine'] as $namespace) {
+        foreach (['liip_imagine', 'monolog'] as $namespace) {
             $path = self::DIRECTORY."/{$namespace}.yml";
             $container->prependExtensionConfig(
                 $namespace,
