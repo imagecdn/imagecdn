@@ -20,7 +20,8 @@ class ImageController extends Controller
         if ($uri === null) {
             throw new HttpException(503, "No image found!");
         }
-        $uri = urldecode($uri);
+        $logger = $this->get('logger');
+        $logger->info('Received request for {$uri}.');
 
         $filterManager = $this->get('liip_imagine.filter.manager');
         $dataManager = $this->get('liip_imagine.data.manager');
@@ -47,8 +48,11 @@ class ImageController extends Controller
         try {
             $binary = $dataManager->find('test', $uri);
         } catch (NotLoadableException $e) {
-            throw new NotFoundHttpException('Source image could not be found', $e);
+            $message = "Source image could not be found";
+            $logger->error($message);
+            throw new NotFoundHttpException($message, $e);
         } catch (Exception $e) {
+            $logger->error($e->getMessage());
             throw new HttpException(503, $e->getMessage());
         }
 
