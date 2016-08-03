@@ -13,14 +13,19 @@ ENV PHP_EXTRA_CONFIGURE_ARGS --enable-cgi
 # persistent / runtime deps
 ENV PHPIZE_DEPS \
 		autoconf \
+		automake \
+		build-base \
 		file \
 		g++ \
 		gcc \
 		libc-dev \
+		libtool \
 		make \
+		nasm \
 		pkgconf \
 		re2c
 RUN apk add --no-cache --virtual .persistent-deps \
+		make \
 		ca-certificates \
 		curl \
 		tar \
@@ -60,7 +65,7 @@ RUN set -xe \
 	&& rm -r "$GNUPGHOME" \
 	&& apk del .fetch-deps
 
-COPY scripts/docker-php-* /usr/local/bin/
+COPY scripts/* /usr/local/bin/
 
 RUN set -xe \
 	&& apk add --no-cache --virtual .build-deps \
@@ -96,26 +101,26 @@ RUN set -xe \
 			| xargs -r apk info --installed \
 			| sort -u \
 	)" \
+        && docker-php-ext-install pcntl exif \
+        && apk add --no-cache \
+                imagemagick-dev \
+                libpng-dev \
+                libpng \
+        && pecl install imagick \
+        && docker-php-ext-enable imagick \
 	&& apk add --no-cache --virtual .php-rundeps $runDeps \
-	&& apk del .build-deps \
+        && install-mozjpeg \
+        && install-pngquant \
+        && apk del .build-deps \
 	&& docker-php-source delete
-## </From docker-library/php> ##
 
-# Install mozjpeg and pngquant
-RUN apk --update add autoconf automake build-base libtool nasm curl libpng libpng-dev imagemagick-dev \
-  && docker-php-ext-install pcntl exif \
-  && pecl install imagick \
-  && docker-php-ext-enable imagick \
-  && curl -sS https://getcomposer.org/installer | php \
-  && mv composer.phar /usr/bin/composer \
-  && rm -rf /var/cache/apk/*
+RUN curl -sS https://getcomposer.org/installer | php \
+  && mv composer.phar /usr/bin/composer
 
 ADD . /srv/image-service
 WORKDIR /srv/image-service
 
-RUN sh ./scripts/install-mozjpeg.sh \
-    && sh ./scripts/install-pngquant.sh \
-
+ENV SYMFONY_ENV prod
 RUN composer install -o
 
 CMD make start PORT=$PORT
