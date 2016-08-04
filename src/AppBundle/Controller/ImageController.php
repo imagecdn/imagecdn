@@ -18,7 +18,7 @@ class ImageController extends Controller
     public function imageAction(Request $request, $uri = null)
     {
         if ($uri === null) {
-            throw new HttpException(503, "No image found!");
+            throw new HttpException(503, 'No image found!');
         }
         $logger = $this->get('logger');
         $logger->info('Received request for {$uri}.');
@@ -39,16 +39,16 @@ class ImageController extends Controller
             ],
             'post_processors' => [
                 'mozjpeg' => [
-                    'qual' => 80
+                    'qual' => 80,
                 ],
-                'pngquant' => []
+                'pngquant' => [],
             ],
         ]);
 
         try {
             $binary = $dataManager->find('test', $uri);
         } catch (NotLoadableException $e) {
-            $message = "Source image could not be found";
+            $message = 'Source image could not be found';
             $logger->error($message);
             throw new NotFoundHttpException($message, $e);
         } catch (Exception $e) {

@@ -5,9 +5,9 @@ namespace AppBundle\DependencyInjection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class AppExtension extends Extension implements PrependExtensionInterface
@@ -18,7 +18,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
     const DIRECTORY = __DIR__.'/../Resources/config';
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -31,7 +31,7 @@ class AppExtension extends Extension implements PrependExtensionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function prepend(ContainerBuilder $container)
     {
