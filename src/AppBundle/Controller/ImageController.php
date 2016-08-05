@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use AppBundle\Http\ImageRequest;
 
 class ImageController extends Controller
 {
@@ -23,12 +24,15 @@ class ImageController extends Controller
         $logger = $this->get('logger');
         $logger->info('Received request for {$uri}.');
 
+        $imageRequest = ImageRequest::fromRequest($request);
+        $imageRequest->setUri($uri);
+
         $filterManager = $this->get('liip_imagine.filter.manager');
         $dataManager = $this->get('liip_imagine.data.manager');
 
-        $height = $request->get('height', 250);
-        $width = $request->get('width', 250);
-        $dpr = $request->get('dpr', 250);
+        $height = $imageRequest->height;
+        $width = $imageRequest->width;
+        $dpr = $imageRequest->dpr;
 
         $filterConfiguration = $this->get('liip_imagine.filter.configuration');
         $filterConfiguration->set('test', [
