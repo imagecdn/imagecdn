@@ -20,7 +20,7 @@ class TransformLoader
     private $filterConfiguration;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param FilterConfiguration $liipImagineFilterConfiguration liip_imagine.filter.configuration
      *
@@ -49,9 +49,9 @@ class TransformLoader
     /**
      * Applies any compatible transforms to this Request and returns a BinaryInterface.
      *
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      *
-     * @return BinaryInterface           BinaryInterface with compatible Transforms applied.
+     * @return BinaryInterface BinaryInterface with compatible Transforms applied.
      */
     public function transform(RequestInterface $request)
     {
@@ -67,18 +67,18 @@ class TransformLoader
         }, $applicableTransforms);
 
         $transformConfig[] = [
-            'data_loader' => 'stream_loader',
+            'data_loader'     => 'stream_loader',
             'post_processors' => [
                 'mozjpeg' => [
                     'qual' => 80,
                 ],
                 'pngquant' => [],
-            ]
+            ],
         ];
 
         $this->filterConfiguration->set(
             'responsive_image',
-            call_user_func_array("array_replace_recursive", $transformConfig)
+            call_user_func_array('array_replace_recursive', $transformConfig)
         );
     }
 }

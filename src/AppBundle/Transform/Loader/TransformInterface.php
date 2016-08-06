@@ -9,16 +9,16 @@ interface TransformInterface
     /**
      * Whether or not this loader can be applied to this Request.
      *
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      *
-     * @return boolean
+     * @return bool
      */
     public function supports(RequestInterface $request);
 
     /**
      * Applies transformation logic to a Request.
      *
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      *
      * @return mixed
      */

@@ -9,7 +9,7 @@ interface RequestInterface
     /**
      * Returns an instance of this Request, from a Symfony request.
      *
-     * @param  SymfonyRequest $request Current Symfony request.
+     * @param SymfonyRequest $request Current Symfony request.
      *
      * @return $this
      */
@@ -18,9 +18,9 @@ interface RequestInterface
     /**
      * Determines whether or not this Request is supported.
      *
-     * @param  string $type
+     * @param string $type
      *
-     * @return boolean
+     * @return bool
      */
     public function supports($type);
 }

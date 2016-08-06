@@ -2,8 +2,8 @@
 
 namespace AppBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 class TransformLoaderPass implements CompilerPassInterface
@@ -16,7 +16,7 @@ class TransformLoaderPass implements CompilerPassInterface
     /**
      * {@inheritdoc}
      *
-     * @param  ContainerBuilder $container
+     * @param ContainerBuilder $container
      *
      * @return void
      */

@@ -58,7 +58,7 @@ class ImageRequest implements RequestInterface
     /**
      * {@inheritdoc}
      *
-     * @param  SymfonyRequest $request
+     * @param SymfonyRequest $request
      *
      * @return $this
      */
@@ -69,6 +69,7 @@ class ImageRequest implements RequestInterface
         foreach ($imageParams as $imageParam) {
             $imageRequest->{$imageParam} = $request->get($imageParam, null);
         }
+
         return $imageRequest;
     }
 
@@ -83,9 +84,9 @@ class ImageRequest implements RequestInterface
     /**
      * {@inheritdoc}
      *
-     * @param  string $format
+     * @param string $format
      *
-     * @return boolean
+     * @return bool
      */
     public function supports($format)
     {
@@ -96,7 +97,7 @@ class ImageRequest implements RequestInterface
     /**
      * Magical getter!
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return mixed
      */

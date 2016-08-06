@@ -9,30 +9,30 @@ class ResizeLoader implements TransformInterface
     /**
      * Whether or not this loader can be applied to this Request.
      *
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      *
-     * @return boolean
+     * @return bool
      */
     public function supports(RequestInterface $request)
     {
-        return (!is_null($request->width) || !is_null($request->height));
+        return !is_null($request->width) || !is_null($request->height);
     }
 
     /**
      * Applies transformation logic to a Request.
      *
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      *
      * @return mixed
      */
     public function transform(RequestInterface $request)
     {
         return [
-            'filters'     => [
+            'filters' => [
                 'thumbnail' => [
                     'size' => [$request->height, $request->width],
                 ],
-            ]
+            ],
         ];
     }
 }

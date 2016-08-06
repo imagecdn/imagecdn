@@ -2,16 +2,16 @@
 
 namespace AppBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use AppBundle\DependencyInjection\Compiler\TransformLoaderPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class AppBundle extends Bundle
 {
     /**
      * {@inheritdoc}
      *
-     * @param  ContainerBuilder $container
+     * @param ContainerBuilder $container
      *
      * @return void
      */
