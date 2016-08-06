@@ -27,30 +27,17 @@ class ImageController extends Controller
         $imageRequest = ImageRequest::fromRequest($request);
         $imageRequest->setUri($uri);
 
-        $filterManager = $this->get('liip_imagine.filter.manager');
-        $dataManager = $this->get('liip_imagine.data.manager');
-
         $height = $imageRequest->height;
         $width = $imageRequest->width;
         $dpr = $imageRequest->dpr;
 
-        $filterConfiguration = $this->get('liip_imagine.filter.configuration');
-        $filterConfiguration->set('test', [
-            'data_loader' => 'stream_loader',
-            'filters'     => ['thumbnail' => [
-                    'size' => [$height, $width],
-                ],
-            ],
-            'post_processors' => [
-                'mozjpeg' => [
-                    'qual' => 80,
-                ],
-                'pngquant' => [],
-            ],
-        ]);
+        $transformLoader = $this->get('responsive_images.transform_loader');
+        $transformLoader->transform($imageRequest);
+        $filterManager = $this->get('liip_imagine.filter.manager');
+        $dataManager = $this->get('liip_imagine.data.manager');
 
         try {
-            $binary = $dataManager->find('test', $uri);
+            $binary = $dataManager->find('responsive_image', $uri);
         } catch (NotLoadableException $e) {
             $message = 'Source image could not be found';
             $logger->error($message);
@@ -60,7 +47,7 @@ class ImageController extends Controller
             throw new HttpException(503, $e->getMessage());
         }
 
-        $binary = $filterManager->applyFilter($binary, 'test', []);
+        $binary = $filterManager->applyFilter($binary, 'responsive_image', []);
 
         $contentLength = mb_strlen($binary->getContent(), '8bit');
         if ($contentLength === false) {

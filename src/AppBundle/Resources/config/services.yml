@@ -1,5 +1,18 @@
 services:
-    responsive_images.stream_loader:
+
+    ## Stream loader.  For the future this may be changed to separate loaders per-protocol.
+    responsive_images.binary_loader.stream_loader:
         class: "%liip_imagine.binary.loader.stream.class%"
         arguments: ['']
         tags: [{ name: 'liip_imagine.binary.loader', loader: 'stream_loader' }]
+
+    ## Transform loader.
+    responsive_images.transform_loader:
+        arguments:
+            - "@liip_imagine.filter.configuration"
+        class: AppBundle\Transform\TransformLoader
+
+    ## Individual transform loader.
+    responsive_images.transform_loader.resize:
+        class: AppBundle\Transform\Loader\ResizeLoader
+        tags: [{ name: 'responsive_images.transform_loader' }]
