@@ -27,13 +27,9 @@ class TransformLoader
      * @return void
      */
     public function __construct(
-        FilterConfiguration $liipImagineFilterConfiguration,
-        FilterManager $liipImagineFilterManager,
-        DataManager $liipImagineDataManager
+        FilterConfiguration $liipImagineFilterConfiguration
     ) {
         $this->filterConfiguration = $liipImagineFilterConfiguration;
-        $this->filterManager = $liipImagineFilterManager;
-        $this->dataManager = $liipImagineDataManager;
     }
 
     /**
