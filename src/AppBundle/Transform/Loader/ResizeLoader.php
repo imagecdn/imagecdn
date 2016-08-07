@@ -29,8 +29,8 @@ class ResizeLoader implements TransformInterface
     {
         return [
             'filters' => [
-                'thumbnail' => [
-                    'size' => [$request->height, $request->width],
+                'resize' => [
+                    'size' => [$request->width, $request->height],
                 ],
             ],
         ];
