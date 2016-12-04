@@ -27,10 +27,6 @@ class ImageController extends Controller
         $imageRequest = ImageRequest::fromRequest($request);
         $imageRequest->setUri($uri);
 
-        $height = $imageRequest->height;
-        $width = $imageRequest->width;
-        $dpr = $imageRequest->dpr;
-
         $transformLoader = $this->get('responsive_images.transform_loader');
         $transformLoader->transform($imageRequest);
         $filterManager = $this->get('liip_imagine.filter.manager');

@@ -35,7 +35,7 @@ class ImageRequest implements RequestInterface
     protected $dpr;
 
     /**
-     * How to fill the image.
+     * How to fill the image frame.
      *
      * @var string
      */
