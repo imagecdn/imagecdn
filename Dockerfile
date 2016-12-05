@@ -81,9 +81,7 @@ RUN set -xe \
 		--with-config-file-path="$PHP_INI_DIR" \
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
 		--enable-cgi \
-# --enable-mysqlnd is included here because it's harder to compile after the fact than extensions are (since it's a plugin for several extensions, not an extension in itself)
 		--enable-mysqlnd \
-# --enable-mbstring is included here because otherwise there's no way to get pecl to use it properly (see https://github.com/docker-library/php/issues/195)
 		--enable-mbstring \
 		--with-curl \
 		--with-libedit \
@@ -121,6 +119,6 @@ ADD . /srv/image-service
 WORKDIR /srv/image-service
 
 ENV SYMFONY_ENV prod
-RUN composer install -o
+RUN composer install -o --no-dev
 
 CMD make start PORT=$PORT
