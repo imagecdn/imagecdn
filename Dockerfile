@@ -23,6 +23,7 @@ ENV PHPIZE_DEPS \
 		make \
 		nasm \
 		pkgconf \
+                git \
 		re2c
 RUN apk add --no-cache --virtual .persistent-deps \
 		make \
@@ -107,6 +108,7 @@ RUN set -xe \
         && pecl install imagick \
         && docker-php-ext-enable imagick \
 	&& apk add --no-cache --virtual .php-rundeps $runDeps \
+        && mkdir -p /build/ && cd /build/ \
         && install-mozjpeg \
         && install-pngquant \
         && apk del .build-deps \
