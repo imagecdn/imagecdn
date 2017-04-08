@@ -6,7 +6,6 @@ MAINTAINER Alex Wilson <a@ax.gy>
 ENV MOZJPEG_VERSION 3.1
 ENV PNGQUANT_VERSION 2.8.2
 
-ENV PORT 8000
 ENV PHP_EXTRA_CONFIGURE_ARGS --enable-cgi
 
 ## <From docker-library/php> ##
@@ -115,12 +114,19 @@ RUN set -xe \
 	&& docker-php-source delete
 
 RUN curl -sS https://getcomposer.org/installer | php \
-  && mv composer.phar /usr/bin/composer
+  && mv composer.phar /usr/bin/composer \
+  && mkdir -p /srv/image-service
+
+ADD composer.json /srv/image-service
+ADD composer.lock /srv/image-service
+WORKDIR /srv/image-service
+RUN composer install --no-dev --no-scripts --no-autoloader
 
 ADD . /srv/image-service
-WORKDIR /srv/image-service
-
 ENV SYMFONY_ENV prod
-RUN composer install -o --no-dev
+ENV PORT 8000
+ENV DEBUG 0
+RUN composer dump-autoload --optimize \
+  && composer run-script post-install-cmd
 
 CMD make start PORT=$PORT
