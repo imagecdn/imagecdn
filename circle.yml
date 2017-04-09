@@ -1,0 +1,9 @@
+machine:
+  services:
+    - docker
+  environment:
+    SYMFONY_ENV: prod
+
+dependencies:  
+  override:
+    - docker-compose build
