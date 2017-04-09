@@ -113,20 +113,28 @@ RUN set -xe \
         && apk del .build-deps \
 	&& docker-php-source delete
 
+# Install Composer.
 RUN curl -sS https://getcomposer.org/installer | php \
   && mv composer.phar /usr/bin/composer \
   && mkdir -p /srv/image-service
 
-ADD composer.json /srv/image-service
-ADD composer.lock /srv/image-service
+# Define application run directory.
 WORKDIR /srv/image-service
+
+# Install vendor via Composer.
+COPY composer.json ./
+COPY composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader
 
-ADD . /srv/image-service
+# Add application.
+COPY ./ ./
+
+# Define Symfony environment and create autoloader.
 ENV SYMFONY_ENV prod
 ENV PORT 8000
 ENV DEBUG 0
 RUN composer dump-autoload --optimize \
   && composer run-script post-install-cmd
 
+# Begin application
 CMD make start PORT=$PORT
