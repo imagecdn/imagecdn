@@ -1,0 +1,11 @@
+version: '2'
+project: responsiveimages
+services:
+    app:
+        image: antoligy/responsive-image-service:latest
+        size: m1
+        environment:
+          PORT: 80
+        ports:
+          - "80:80"
+        fip: 199.245.57.146
