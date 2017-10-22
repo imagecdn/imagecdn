@@ -3,7 +3,7 @@ services:
   responsiveimages:
     build:
       context: .
-    image: registry.heroku.com/responsive-image-service/web
+    image: antoligy/responsive-image-service:latest
     container_name: responsiveimages
     ports:
       - "8100:80"
