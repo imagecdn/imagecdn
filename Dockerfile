@@ -3,10 +3,9 @@ FROM alpine:3.4
 
 MAINTAINER Alex Wilson <a@ax.gy>
 
-ENV MOZJPEG_VERSION 3.1
-ENV PNGQUANT_VERSION 2.8.2
+ENV MOZJPEG_VERSION 3.2
+ENV PNGQUANT_VERSION 2.10.2
 
-ENV PORT 8000
 ENV PHP_EXTRA_CONFIGURE_ARGS --enable-cgi
 
 ## <From docker-library/php> ##
@@ -116,7 +115,8 @@ RUN set -xe \
 
 # Install Composer.
 RUN curl -sS https://getcomposer.org/installer | php \
-  && mv composer.phar /usr/bin/composer
+  && mv composer.phar /usr/bin/composer \
+  && mkdir -p /srv/image-service
 
 # Define application run directory.
 WORKDIR /srv/image-service
@@ -131,8 +131,10 @@ COPY ./ ./
 
 # Define Symfony environment and create autoloader.
 ENV SYMFONY_ENV prod
-RUN composer dump-autoload --optimize
-RUN composer run-script post-install-cmd
+ENV PORT 8000
+ENV DEBUG 0
+RUN composer dump-autoload --optimize \
+  && composer run-script post-install-cmd
 
 # Begin application
 CMD make start PORT=$PORT

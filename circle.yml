@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:latest
+        environment:
+          SYMFONY_ENV: prod
+    working_directory: ~/responsive-image-service
+    steps:
+      - checkout
+      - run:
+          name: Build Docker container.
+          command: docker-compose build

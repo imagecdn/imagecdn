@@ -1,0 +1,12 @@
+version: '2'
+services:
+  responsiveimages:
+    build:
+      context: .
+    image: antoligy/responsive-image-service:latest
+    container_name: responsiveimages
+    ports:
+      - "8100:80"
+    environment:
+      - PORT=80
+      - DEBUG=0

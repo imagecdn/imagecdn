@@ -3,4 +3,4 @@ Dockerfile
 var/cache
 var/logs
 var/sessions
-vendor/bin
+vendor
