@@ -52,6 +52,7 @@ func imageAction(res http.ResponseWriter, req *http.Request) {
 	mw.ReadImageBlob(sourceObject)
 
 	formatImage(res, req, mw)
+	resizeImage(res, req, mw)
 
 	img := mw.GetImageBlob()
 	res.WriteHeader(http.StatusOK)
@@ -59,6 +60,34 @@ func imageAction(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Length", strconv.Itoa(len(img)))
 
 	res.Write(img)
+}
+
+func resizeImage(res http.ResponseWriter, req *http.Request, mw *imagick.MagickWand) {
+	var height, width uint
+	queryString := req.URL.Query()
+
+	heights, heightOk := queryString["height"]
+	widths, widthOk := queryString["width"]
+
+	if (!heightOk && !widthOk) {
+		return
+	}
+
+	// Assume no fill, yet.
+	if (heightOk && len(heights) > 0) {
+		IHeight, _ := strconv.Atoi(heights[0])
+		height = uint(IHeight)
+	} else {
+		height = mw.GetImageHeight()
+	}
+	if (widthOk && len(widths) > 0) {
+		IWidth, _ := strconv.Atoi(widths[0])
+		width = uint(IWidth)
+	} else {
+		width = mw.GetImageWidth()
+	}
+
+	mw.ResizeImage(width, height, imagick.FILTER_LANCZOS)
 }
 
 func formatImage(res http.ResponseWriter, req *http.Request, mw *imagick.MagickWand) {
