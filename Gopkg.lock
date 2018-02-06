@@ -8,14 +8,29 @@
   revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
 
 [[projects]]
+  name = "github.com/gorilla/handlers"
+  packages = ["."]
+  revision = "90663712d74cb411cbef281bc1e08c19d1a76145"
+  version = "v1.3.0"
+
+[[projects]]
   name = "github.com/gorilla/mux"
   packages = ["."]
   revision = "53c1911da2b537f792e7cafcb446b05ffe33b996"
   version = "v1.6.1"
 
+[[projects]]
+  name = "gopkg.in/gographics/imagick.v3"
+  packages = [
+    "imagick",
+    "imagick/types"
+  ]
+  revision = "e5c95c340c8d9bf140ca670563906805b655d9d9"
+  version = "v3.2.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9f2ff4af4f38c466297eb5c258a8ec9d28409a8cea92f61cb7562f91eaa3448a"
+  inputs-digest = "6f994be0f098e64700f67f2e8eedd15c34b61fd67eeb3cbd5109fbed853dcbe2"
   solver-name = "gps-cdcl"
   solver-version = 1
