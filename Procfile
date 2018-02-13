@@ -1,1 +1,1 @@
-web: make start PORT=$PORT
+web: responsive-image-service
