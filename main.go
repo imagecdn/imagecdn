@@ -2,6 +2,8 @@ package main
 
 import (
 	// "os"
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,12 +17,18 @@ import (
 )
 
 func main() {
+	listenPort := flag.Int("port", 8080, "Listening port")
+	listenHost := ""
+	flag.Parse()
 
 	router := mux.NewRouter().StrictSlash(true).UseEncodedPath()
 	router.HandleFunc("/", indexAction)
 	router.HandleFunc("/v2/images/{source}", imageAction)
 	// loggedRouter := handlers.LoggingHandler(os.Stdout, router)
-	log.Fatal(http.ListenAndServe(":8080", router))
+
+	listen := fmt.Sprintf("%s:%d", listenHost, *listenPort)
+	log.Printf("🚀 Listening on %v", listen)
+	log.Fatal(http.ListenAndServe(listen, router))
 }
 
 func indexAction(res http.ResponseWriter, req *http.Request) {
