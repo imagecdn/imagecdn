@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	// "github.com/gorilla/handlers"
@@ -23,6 +24,7 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true).UseEncodedPath()
 	router.HandleFunc("/", indexAction)
+	router.HandleFunc("/v1/{wildcard:.*}", handleV1MethodsAction)
 	router.HandleFunc("/v2/images/{source}", imageAction)
 	// loggedRouter := handlers.LoggingHandler(os.Stdout, router)
 
@@ -33,6 +35,11 @@ func main() {
 
 func indexAction(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusOK)
+}
+
+func handleV1MethodsAction(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Location", strings.Replace(req.URL.RequestURI(), "/v1/", "/v2/", 1))
+	res.WriteHeader(http.StatusPermanentRedirect)
 }
 
 func imageAction(res http.ResponseWriter, req *http.Request) {
