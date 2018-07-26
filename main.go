@@ -1,21 +1,31 @@
 package main
 
 import (
-	// "os"
+	// "context"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	// "os"
 	"strconv"
 	"strings"
 	"time"
 
 	// "github.com/gorilla/handlers"
+	// "github.com/die-net/lrucache"
+	// "github.com/die-net/lrucache/twotier"
 	"github.com/gorilla/mux"
+	// "github.com/gregjones/httpcache"
+	// "github.com/gregjones/httpcache/diskcache"
 	"gopkg.in/gographics/imagick.v3/imagick"
 )
+
+// var cache httpcache.Cache
+
+// var mw
+
 
 func main() {
 	listenPort := flag.Int("port", 8080, "Listening port")
@@ -27,6 +37,12 @@ func main() {
 	router.HandleFunc("/v1/{wildcard:.*}", handleV1MethodsAction)
 	router.HandleFunc("/v2/images/{source}", imageAction)
 	// loggedRouter := handlers.LoggingHandler(os.Stdout, router)
+
+	// tempDir, _ := ioutil.TempDir("", "image-service")
+	// cache = twotier.New(lrucache.New(2048, 604800), diskcache.New(tempDir))
+
+	imagick.Initialize()
+	defer imagick.Terminate()
 
 	listen := fmt.Sprintf("%s:%d", listenHost, *listenPort)
 	log.Printf("🚀 Listening on %v", listen)
@@ -46,24 +62,25 @@ func imageAction(res http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	source, _ := url.QueryUnescape(params["source"])
 
-	imagick.Initialize()
-	defer imagick.Terminate()
-
 	httpClient := &http.Client{
-		Timeout: time.Second * 30,
+		// Transport: httpcache.NewTransport(cache),
+		Timeout:   time.Second * 30,
 	}
 
 	sourceResponse, err := httpClient.Get(source)
 	if err != nil {
 		res.WriteHeader(sourceResponse.StatusCode)
 	}
-	defer sourceResponse.Body.Close()
 	sourceObject, _ := ioutil.ReadAll(sourceResponse.Body)
+	defer sourceResponse.Body.Close()
+	log.Printf("👌 Downloaded %s with Content-Length %v", source, strconv.Itoa(len(sourceObject)))
 
 	mw := imagick.NewMagickWand()
-	defer mw.Destroy()
-
-	mw.ReadImageBlob(sourceObject)
+	err = mw.ReadImageBlob(sourceObject)
+	if (err != nil) {
+		log.Panic(err.Error())		
+	}
+	log.Printf("😎 Loaded %s into wand with canvas %vx%v", source, mw.GetImageWidth(), mw.GetImageHeight())
 
 	formatImage(res, req, mw)
 	resizeImage(res, req, mw)
@@ -71,9 +88,12 @@ func imageAction(res http.ResponseWriter, req *http.Request) {
 	img := mw.GetImageBlob()
 	res.WriteHeader(http.StatusOK)
 
-	res.Header().Set("Content-Length", strconv.Itoa(len(img)))
+	imgLength := strconv.Itoa(len(img))
+	log.Printf("💯 Serving %s with Content-Length %v", source, imgLength)
+	res.Header().Set("Content-Length", imgLength)
 
 	res.Write(img)
+	defer mw.Destroy()
 }
 
 func resizeImage(res http.ResponseWriter, req *http.Request, mw *imagick.MagickWand) {

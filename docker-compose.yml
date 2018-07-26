@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+    image_service:
+        build: .
+        ports:
+          - "9090:8080"
