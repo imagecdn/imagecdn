@@ -1,0 +1,25 @@
+# Meta
+name: "ImageCDN"
+description: "A free image resizing service and CDN."
+
+# Links
+permalink: /blog/:year/:month/:day/:title/
+relative_permalinks: false
+author:
+    name: Alex Wilson
+    email: a@ax.gy
+    uri: https://alexwilson.tech/
+
+# General
+encoding: UTF-8
+
+# Gems
+plugins:
+    - jekyll-feed
+    - jekyll-gist
+    - jekyll-sitemap
+    - jekyll-seo-tag
+
+exclude:
+    - node_modules
+    - src

@@ -1,0 +1,61 @@
+---
+layout: main
+permalink: /getting-started
+title: ImageCDN
+---
+
+<script type="text/javascript" src="/js/generator.js"></script>
+
+<h1>Getting Started</h1>
+
+<p>
+  So you're looking to improve the performance and usage of your images. You've come to the right place!<br />
+
+</p>
+<hr />
+
+<h3>Generate an image URL</h3>
+<div class="row">
+  <div class="col-12 col-sm-6">
+    <div class="row">
+      <img id="output-image" class="mx-auto img-fluid img-thumbnail" />
+    </div>
+    <br />
+    <div class="row">
+        <textarea class="form-control" id="output-url" rows="3"></textarea>
+    </div>
+  </div>
+  <div class="col-12 col-sm-6">
+    <form id="form-generate-image" action="#">
+      <label for="image-url"><strong>Image URL *</strong></label>
+      <div class="form-group">
+        <input
+          type="url"
+          class="form-control"
+          id="image-url"
+          name="image"
+          placeholder="Image URL"
+          value="https://images.unsplash.com/photo-1525923838299-2312b60f6d69"
+          required
+        />
+      </div>
+      <div class="row">
+        <label for="form-height" class="col-12 col-sm-6"><strong>Height</strong></label>
+        <label for="form-width" class="col-12 col-sm-6"><strong>Width</strong></label>
+      </div>
+      <div class="form-group row">
+        <div class="input-group col-12 col-sm-6">
+          <input class="form-control" placeholder="Height" type="number" name="height" id="form-height">
+          <div class="input-group-addon">px</div>
+        </div>
+        <div class="input-group col-12 col-sm-6">
+          <input class="form-control" placeholder="Width" type="number" name="width" id="form-width" value="300">
+          <div class="input-group-addon">px</div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Generate Link</button><br />
+      For more advanced usage, <a href="/docs">check out the full documentation here</a>.
+    </form>
+  </div>
+</div>
