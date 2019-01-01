@@ -16,8 +16,6 @@ class DocumentationController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $response = new Response("<html><body><h1>Responsive Image Service</h1></body></html>");
-
         return [];
     }
 }
