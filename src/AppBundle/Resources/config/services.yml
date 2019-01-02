@@ -1,5 +1,10 @@
 services:
 
+    ## Return friendlier error messages.
+    responsive_images.transform_loader.resize:
+        class: AppBundle\Controller\ExceptionController
+        arguments: ['@twig', '%kernel.debug%']
+
     ## Stream loader.  For the future this may be changed to separate loaders per-protocol.
     responsive_images.binary_loader.stream_loader:
         class: "%liip_imagine.binary.loader.stream.class%"

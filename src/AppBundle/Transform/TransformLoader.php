@@ -29,6 +29,7 @@ class TransformLoader
     public function __construct(
         FilterConfiguration $liipImagineFilterConfiguration
     ) {
+        $this->transforms = [];
         $this->filterConfiguration = $liipImagineFilterConfiguration;
     }
 
