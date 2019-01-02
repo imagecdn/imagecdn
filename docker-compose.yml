@@ -5,8 +5,11 @@ services:
       context: .
     image: antoligy/responsive-image-service:latest
     container_name: responsiveimages
+    volumes:
+      - ./app/config:/srv/image-service/app/config
+      - ./src:/srv/image-service/src
     ports:
       - "8100:80"
     environment:
       - PORT=80
-      - DEBUG=0
+      - DEBUG=1
