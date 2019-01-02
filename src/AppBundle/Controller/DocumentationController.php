@@ -12,6 +12,7 @@ class DocumentationController extends Controller
 {
     /**
      * @Route("/")
+     * @Route("/v1/")
      * @Template("AppBundle:content:index.html.twig")
      */
     public function indexAction(Request $request)
