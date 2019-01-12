@@ -1,7 +1,7 @@
 services:
 
     ## Return friendlier error messages.
-    responsive_images.transform_loader.resize:
+    imagecdn.handler.error:
         class: AppBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']
 
