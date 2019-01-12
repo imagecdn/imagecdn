@@ -1,10 +1,10 @@
 version: '2'
 services:
-  responsiveimages:
+  imagecdn:
     build:
       context: .
-    image: antoligy/responsive-image-service:latest
-    container_name: responsiveimages
+    image: imagecdn/imagecdn:v1
+    container_name: imagecdn
     volumes:
       - ./app/config:/srv/image-service/app/config
       - ./src:/srv/image-service/src

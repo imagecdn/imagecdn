@@ -1,1 +1,1 @@
-exception_controller: responsive_images.transform_loader.resize:showAction
+exception_controller: imagecdn.handler.error:showAction

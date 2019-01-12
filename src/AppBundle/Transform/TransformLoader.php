@@ -77,5 +77,7 @@ class TransformLoader
             'responsive_image',
             call_user_func_array('array_replace_recursive', $transformConfig)
         );
+
+        return $transformConfig;
     }
 }

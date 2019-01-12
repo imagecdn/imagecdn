@@ -7,7 +7,7 @@ use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{JsonResponse, Response};
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -28,9 +28,13 @@ class ImageController extends Controller
         $imageRequest->setUri($uri);
 
         $transformLoader = $this->get('responsive_images.transform_loader');
-        $transformLoader->transform($imageRequest);
+        $transforms = $transformLoader->transform($imageRequest);
         $filterManager = $this->get('liip_imagine.filter.manager');
         $dataManager = $this->get('liip_imagine.data.manager');
+
+        if ($request->query->has('debug')) {
+            return new JsonResponse($transforms);
+        }
 
         try {
             $binary = $dataManager->find('responsive_image', $uri);
