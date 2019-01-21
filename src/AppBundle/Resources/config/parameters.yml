@@ -1,3 +1,0 @@
-parameters:
-    liip_imagine.mozjpeg.binary: cjpeg
-    liip_imagine.pngquant.binary: pngquant

@@ -1,0 +1,44 @@
+{
+  "name": "imagecdn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lambda.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imagecdn/imagecdn.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/imagecdn/imagecdn/issues"
+  },
+  "homepage": "https://github.com/imagecdn/imagecdn#readme",
+  "dependencies": {
+    "connect": "^3.6.6",
+    "cwebp-bin": "^5.0.0",
+    "execa": "^1.0.0",
+    "file-type": "^10.7.0",
+    "image-type": "^3.0.0",
+    "is-jpg": "^2.0.0",
+    "is-png": "^1.1.0",
+    "mime-types": "^2.1.21",
+    "mozjpeg": "^6.0.1",
+    "node-fetch": "^2.3.0",
+    "pngquant-bin": "^5.0.1",
+    "sharp": "^0.21.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.9"
+  }
+}

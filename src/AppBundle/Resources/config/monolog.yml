@@ -1,5 +1,0 @@
-handlers:
-    main:
-        type:  stream
-        path:  "php://stderr"
-        level: debug
