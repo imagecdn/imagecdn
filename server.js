@@ -93,7 +93,12 @@ app.use('/v2/image/', function(req, res) {
 })
 // Handle redirects from /v1/ service to /v2/
 app.use('/v1/images/', (req, res) => {
-    res.setHeader('Location', req.originalUrl.replace('/v1/images/', '/v2/image/'))
+    res.setHeader('Location', req.originalUrl
+        // Endpoint is now singular.
+        .replace('/v1/images/', '/v2/image/')
+        // Fill is now Fit to reflect common terminology.
+        .replace('fill=', 'fit=')
+    )
     res.statusCode = 301
     return res.end()
 })
