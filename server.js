@@ -40,6 +40,14 @@ app.use('/v2/image/', function(req, res) {
     return fetch(parameters.uri, {
         cache: 'force-cache'
     })
+        .catch(err => {
+            console.log(err)
+            res.statusCode = 404
+            return res.end(JSON.stringify({
+                error: "Image not found."
+            }))
+        })
+
         .then(res => res.buffer())
         .then(buffer => {
             if (!parameters.format) {
@@ -65,7 +73,22 @@ app.use('/v2/image/', function(req, res) {
         .then(image => {
             res.setHeader('Content-Length', image.byteLength)
             res.setHeader('Content-Type', mime.contentType(parameters.format))
+
+            // Instruct upstream proxies to cache this for a month.
+            const cacheTtl = 60 * 60 * 24 * 30
+            res.setHeader('Cache-Control', `public, max-age=${cacheTtl} s-maxage=${cacheTtl}`)
+            res.setHeader('Expires', new Date(Date.now() + cacheTtl*1000).toUTCString())
+
             return res.end(image)
+        })
+
+        // Generic error handling.
+        .catch(err => {
+            console.error(err)
+            res.statusCode = 503
+            return res.end(JSON.stringify({
+                error: "An unexpected error occurred, if the issue persists please get in touch with imagecdn.support@imagecdn.app"
+            }))
         })
 })
 // Handle redirects from /v1/ service to /v2/
