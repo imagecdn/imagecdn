@@ -6,7 +6,6 @@ services:
     image: imagecdn/imagecdn:v1
     container_name: imagecdn
     volumes:
-      - ./app/config:/srv/image-service/app/config
       - ./src:/srv/image-service/src
     ports:
       - "8100:80"

@@ -3,9 +3,11 @@ const url = require('url')
 const os = require('os')
 const connect = require('connect')
 const httpProxy = require('http-proxy')
+const throng = require('throng')
 const fetch = require('make-fetch-happen').defaults({
     cacheManager: os.tmpdir()
 })
+
 const Parameters = require('./lib/parameters')
 const mime = require('mime-types')
 const fileType = require('file-type')
@@ -17,6 +19,7 @@ const compressBuffer = require('./lib/compress/compressBuffer')
 
 const app = connect()
 const port = process.env.PORT || 3000
+const workers = process.env.WEB_CONCURRENCY || 1
 
 app.use(acceptReader)
 app.use(urlReader)
@@ -88,6 +91,12 @@ app.use('/about', proxyToOrigin)
 app.use('/', proxyToOrigin)
 app.use('/*', proxyToOrigin)
 
-const server = http.createServer(app).listen(port, _ => {
-    console.log(`Now listening on ${server.address().port}`)
-})
+async function main() {
+    const server = http.createServer(app).listen(port, _ => {
+        console.log(`Now listening on ${server.address().port}`)
+    })
+}
+throng({
+    workers,
+    lifetime: Infinity
+}, main)
