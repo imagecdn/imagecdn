@@ -25,6 +25,14 @@ app.use(acceptReader)
 app.use(urlReader)
 
 app.use('/v2/health', function(req, res) {
+    res.setHeader('Cache-Control', [
+        'private',
+        'max-age=0',
+        'no-cache',
+        'no-store',
+        'must-revalidate'
+    ].join(', '))
+    res.setHeader('Expires', new Date(Date.now() - 1000).toUTCString())
     return res.end(JSON.stringify({
         status: 'OK',
         latestCheck: Date.now()
