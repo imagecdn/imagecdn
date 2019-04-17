@@ -81,6 +81,7 @@ app.use('/v2/image/', function(req, res) {
         .then(image => {
             res.setHeader('Content-Length', image.byteLength)
             res.setHeader('Content-Type', mime.contentType(parameters.format))
+            res.setHeader('ICDN-Format', parameters.format)
 
             // Instruct upstream proxies to cache this for a month.
             const cacheTtl = 60 * 60 * 24 * 30
