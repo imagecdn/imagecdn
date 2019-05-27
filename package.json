@@ -30,7 +30,7 @@
     "http-proxy": "^1.17.0",
     "image-type": "^3.0.0",
     "is-jpg": "^2.0.0",
-    "is-png": "^1.1.0",
+    "is-png": "^2.0.0",
     "make-fetch-happen": "^4.0.1",
     "mime-types": "^2.1.21",
     "mozjpeg": "^6.0.1",
