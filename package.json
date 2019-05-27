@@ -26,7 +26,7 @@
     "connect": "^3.6.6",
     "cwebp-bin": "^5.1.0",
     "execa": "^1.0.0",
-    "file-type": "^10.7.0",
+    "file-type": "^11.1.0",
     "http-proxy": "^1.17.0",
     "image-type": "^3.0.0",
     "is-jpg": "^2.0.0",
