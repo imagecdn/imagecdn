@@ -34,7 +34,7 @@
     "make-fetch-happen": "^4.0.1",
     "mime-types": "^2.1.21",
     "mozjpeg": "^6.0.1",
-    "pngquant-bin": "^5.0.1",
+    "pngquant-bin": "^5.0.2",
     "sharp": "^0.21.3",
     "throng": "^4.0.0"
   },
