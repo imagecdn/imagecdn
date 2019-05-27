@@ -24,7 +24,7 @@
   "homepage": "https://github.com/imagecdn/imagecdn#readme",
   "dependencies": {
     "connect": "^3.6.6",
-    "cwebp-bin": "^5.0.0",
+    "cwebp-bin": "^5.1.0",
     "execa": "^1.0.0",
     "file-type": "^10.7.0",
     "http-proxy": "^1.17.0",
