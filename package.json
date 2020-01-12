@@ -23,24 +23,24 @@
   },
   "homepage": "https://github.com/imagecdn/imagecdn#readme",
   "dependencies": {
-    "connect": "^3.6.6",
-    "cwebp-bin": "^5.0.0",
+    "connect": "^3.7.0",
+    "cwebp-bin": "^5.1.0",
     "execa": "^1.0.0",
-    "file-type": "^10.7.0",
+    "file-type": "^11.1.0",
     "http-proxy": "^1.17.0",
-    "image-type": "^3.0.0",
+    "image-type": "^4.1.0",
     "is-jpg": "^2.0.0",
-    "is-png": "^1.1.0",
+    "is-png": "^2.0.0",
     "make-fetch-happen": "^4.0.1",
-    "mime-types": "^2.1.21",
+    "mime-types": "^2.1.24",
     "mozjpeg": "^6.0.1",
-    "pngquant-bin": "^5.0.1",
-    "sharp": "^0.21.3",
+    "pngquant-bin": "^5.0.2",
+    "sharp": "^0.22.1",
     "throng": "^4.0.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.9"
+    "nodemon": "^1.19.1"
   }
 }
