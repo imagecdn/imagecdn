@@ -87,6 +87,9 @@ app.use('/v2/image/', function(req, res) {
             res.setHeader('Cache-Control', `public, max-age=${cacheTtl} s-maxage=${cacheTtl}`)
             res.setHeader('Expires', new Date(Date.now() + cacheTtl*1000).toUTCString())
 
+            // Allow CORS from everywhere for more advanced image use-cases.
+            res.setHeader('Access-Control-Allow-Origin', '*')
+
             return res.end(image)
         })
 
