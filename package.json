@@ -25,7 +25,7 @@
   "dependencies": {
     "connect": "^3.7.0",
     "cwebp-bin": "^5.1.0",
-    "execa": "^1.0.0",
+    "execa": "^5.0.1",
     "file-type": "^11.1.0",
     "http-proxy": "^1.17.0",
     "image-type": "^4.1.0",
