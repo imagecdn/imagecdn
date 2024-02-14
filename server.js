@@ -1,10 +1,11 @@
-import http from "http";
-import url from "url";
 import os from "os";
-import connect from "connect";
-import httpProxy from "http-proxy";
 import throng from "throng";
 import makeFetchHappen from "make-fetch-happen";
+
+import Fastify from "fastify";
+import fastifyMiddie from "@fastify/middie";
+import fastifyRateLimit from "@fastify/rate-limit";
+import fastifyReplyFrom from "@fastify/reply-from";
 
 import Parameters from "./lib/parameters.js";
 import mime from "mime-types";
@@ -15,7 +16,6 @@ import urlReader from "./lib/connect/urlReader.js";
 import transformBuffer from "./lib/transform/transformBuffer.js";
 import compressBuffer from "./lib/compress/compressBuffer.js";
 
-const app = connect();
 const port = process.env.PORT || 3000;
 const workers = process.env.WEB_CONCURRENCY || 1;
 
@@ -23,146 +23,162 @@ const fetch = makeFetchHappen.defaults({
   cacheManager: os.tmpdir(),
 });
 
-// import fetch = require('make-fetch-happen').defaults({
-//   cacheManager: os.tmpdir()
-// })
+const fastify = Fastify({
+  logger: true,
+});
+await fastify.register(fastifyMiddie);
+await fastify.register(fastifyRateLimit, {});
+await fastify.register(fastifyReplyFrom, {
+  base: "https://imagecdn.github.io",
+});
 
-app.use(acceptReader);
-app.use(urlReader);
+fastify.use(acceptReader);
+fastify.use(urlReader);
 
-app.use("/v2/health", function (req, res) {
-  res.setHeader(
+const proxyHandler = () => (request, reply) => {
+  const { path } = request;
+  return reply.from(path, {
+    rewriteRequestHeaders: function (request, headers) {
+      headers["host"] = "imagecdn.app";
+      return headers;
+    },
+  });
+};
+fastify.get("/getting-started", proxyHandler());
+fastify.get("/docs", proxyHandler());
+fastify.get("/about", proxyHandler());
+fastify.get("/js/*", proxyHandler());
+fastify.get("/images/*", proxyHandler());
+fastify.get("/", proxyHandler());
+
+fastify.get("/v2/health", function (request, reply) {
+  reply.header(
     "Cache-Control",
     ["private", "max-age=0", "no-cache", "no-store", "must-revalidate"].join(
       ", ",
     ),
   );
-  res.setHeader("Expires", new Date(Date.now() - 1000).toUTCString());
-  return res.end(
-    JSON.stringify({
-      status: "OK",
-      latestCheck: Date.now(),
-    }),
-  );
+  reply.header("Expires", new Date(Date.now() - 1000).toUTCString());
+  return reply.send({
+    status: "OK",
+    latestCheck: Date.now(),
+  });
 });
-app.use("/v2/image/", function (req, res) {
-  const reqUrl = url.parse(req.url);
+fastify.get(
+  "/v2/image/:imageUri",
+  {
+    config: {
+      rateLimit: {
+        max: process.env.IMAGE_RATELIMIT_MAX || 10,
+        window: process.env.IMAGE_RATELIMIT_WINDOW || 100000,
 
-  const parameters = new Parameters(
-    Object.assign(
-      {
-        uri: decodeURIComponent(reqUrl.pathname.replace(/^\//, "")),
+        // restrict unknown origins
+        keyGenerator: function (request) {
+          const { imageUri } = request.params;
+          const { origin } = new URL(imageUri);
+          return origin;
+        },
       },
-      req.query,
-    ),
-  );
+    },
+  },
+  async function imageV2(request, reply) {
+    const { imageUri } = request.params;
 
-  return (
-    fetch(parameters.uri, {
-      cache: "force-cache",
-    })
-      .catch((err) => {
-        console.log(err);
-        res.statusCode = 404;
-        return res.end(
-          JSON.stringify({
+    const parameters = new Parameters(
+      Object.assign(
+        {
+          uri: imageUri,
+        },
+        request.query,
+      ),
+    );
+
+    return (
+      fetch(parameters.uri, {
+        cache: "force-cache",
+      })
+        .catch((err) => {
+          console.log(err);
+          reply.status(404);
+          return reply.send({
             error: "Image not found.",
-          }),
-        );
-      })
+          });
+        })
 
-      .then((res) => res.buffer())
-      .then(async (buffer) => {
-        if (!parameters.format) {
-          const { ext } = await fileTypeFromBuffer(buffer);
+        .then((res) => res.buffer())
+        .then(async (buffer) => {
+          if (!parameters.format) {
+            const { ext } = await fileTypeFromBuffer(buffer);
 
-          // We treat WebP and JPG as one and the same.
-          // This allows older browsers to be served the right image format.
-          if (ext === "jpg" || ext === "webp") {
-            parameters.format = "jpg";
-            if (req.alternativeFormats.has("jpg")) {
-              parameters.format = req.alternativeFormats.get("jpg");
+            // We treat WebP and JPG as one and the same.
+            // This allows older browsers to be served the right image format.
+            if (ext === "jpg" || ext === "webp") {
+              parameters.format = "jpg";
+              if (req.alternativeFormats.has("jpg")) {
+                parameters.format = req.alternativeFormats.get("jpg");
+              }
+
+              //
+            } else if (ext === "png") {
+              parameters.format = "png";
             }
-
-            //
-          } else if (ext === "png") {
-            parameters.format = "png";
           }
-        }
-        return buffer;
-      })
-      .then((buffer) => transformBuffer(parameters)(buffer))
-      .then((buffer) => compressBuffer(parameters)(buffer))
-      .then((image) => {
-        res.setHeader("Content-Length", image.byteLength);
-        res.setHeader("Content-Type", mime.contentType(parameters.format));
-        res.setHeader("ICDN-Format", parameters.format);
+          return buffer;
+        })
+        .then((buffer) => transformBuffer(parameters)(buffer))
+        .then((buffer) => compressBuffer(parameters)(buffer))
+        .then((image) => {
+          reply.header("Content-Length", image.byteLength);
+          reply.header("Content-Type", mime.contentType(parameters.format));
+          reply.header("ICDN-Format", parameters.format);
 
-        // Instruct upstream proxies to cache this for a month.
-        const cacheTtl = 60 * 60 * 24 * 30;
-        res.setHeader(
-          "Cache-Control",
-          `public, max-age=${cacheTtl} s-maxage=${cacheTtl}`,
-        );
-        res.setHeader(
-          "Expires",
-          new Date(Date.now() + cacheTtl * 1000).toUTCString(),
-        );
+          // Instruct upstream proxies to cache this for a month.
+          const cacheTtl = 60 * 60 * 24 * 30;
+          reply.header(
+            "Cache-Control",
+            `public, max-age=${cacheTtl} s-maxage=${cacheTtl}`,
+          );
+          reply.header(
+            "Expires",
+            new Date(Date.now() + cacheTtl * 1000).toUTCString(),
+          );
 
-        // Allow CORS from everywhere for more advanced image use-cases.
-        res.setHeader("Access-Control-Allow-Origin", "*");
+          // Allow CORS from everywhere for more advanced image use-cases.
+          reply.header("Access-Control-Allow-Origin", "*");
 
-        return res.end(image);
-      })
+          return reply.send(image);
+        })
 
-      // Generic error handling.
-      .catch((err) => {
-        console.error(err);
-        res.statusCode = 503;
-        return res.end(
-          JSON.stringify({
+        // Generic error handling.
+        .catch((err) => {
+          console.error(err);
+          reply.status(503);
+          return reply.send({
             error:
               "An unexpected error occurred, if the issue persists please get in touch with imagecdn.support@imagecdn.app",
-          }),
-        );
-      })
-  );
-});
+          });
+        })
+    );
+  },
+);
 // Handle redirects from /v1/ service to /v2/
-app.use("/v1/images/", (req, res) => {
-  res.setHeader(
+fastify.get("/v1/images/*", (request, reply) => {
+  reply.header(
     "Location",
-    req.originalUrl
+    request.originalUrl
       // Endpoint is now singular.
       .replace("/v1/images/", "/v2/image/")
       // Fill is now Fit to reflect common terminology.
       .replace("fill=", "fit="),
   );
-  res.statusCode = 301;
-  return res.end();
+  reply.status(301);
+  return reply.send();
 });
 
-// Fall-back to docsite for unknown routes.
-const proxyToOrigin = (req, res) => {
-  req.url = req.originalUrl;
-  return httpProxy
-    .createProxyServer({
-      target: "http://imagecdn.github.io",
-      headers: {
-        Host: "imagecdn.app",
-      },
-    })
-    .web(req, res);
-};
-app.use("/getting-started", proxyToOrigin);
-app.use("/docs", proxyToOrigin);
-app.use("/about", proxyToOrigin);
-app.use("/", proxyToOrigin);
-app.use("/*", proxyToOrigin);
-
 async function main() {
-  const server = http.createServer(app).listen(port, (_) => {
-    console.log(`Now listening on ${server.address().port}`);
+  fastify.listen({ port }, (err, address) => {
+    if (err) throw err;
+    console.log(`Now listening on ${address}`);
   });
 }
 
