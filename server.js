@@ -18,13 +18,18 @@ import compressBuffer from "./lib/compress/compressBuffer.js";
 
 const port = process.env.PORT || 3000;
 const workers = process.env.WEB_CONCURRENCY || 1;
+const logLevel = process.env.LOG_LEVEL || "info";
+const imageRateLimitMax = process.env.IMAGE_RATELIMIT_MAX || 10;
+const imageRateLimitWindow = process.env.IMAGE_RATELIMIT_WINDOW || 1000;
 
 const fetch = makeFetchHappen.defaults({
   cacheManager: os.tmpdir(),
 });
 
 const fastify = Fastify({
-  logger: true,
+  logger: {
+    level: logLevel,
+  },
 });
 await fastify.register(fastifyMiddie);
 await fastify.register(fastifyRateLimit, {});
@@ -69,8 +74,8 @@ fastify.get(
   {
     config: {
       rateLimit: {
-        max: process.env.IMAGE_RATELIMIT_MAX || 10,
-        window: process.env.IMAGE_RATELIMIT_WINDOW || 100000,
+        max: imageRateLimitMax,
+        window: imageRateLimitWindow,
 
         // restrict unknown origins
         keyGenerator: function (request) {
@@ -98,7 +103,7 @@ fastify.get(
         cache: "force-cache",
       })
         .catch((err) => {
-          console.log(err);
+          request.log.error(err);
           reply.status(404);
           return reply.send({
             error: "Image not found.",
@@ -114,7 +119,7 @@ fastify.get(
             // This allows older browsers to be served the right image format.
             if (ext === "jpg" || ext === "webp") {
               parameters.format = "jpg";
-              if (req.alternativeFormats.has("jpg")) {
+              if (request.alternativeFormats.has("jpg")) {
                 parameters.format = req.alternativeFormats.get("jpg");
               }
 
@@ -151,7 +156,7 @@ fastify.get(
 
         // Generic error handling.
         .catch((err) => {
-          console.error(err);
+          request.log.error(err);
           reply.status(503);
           return reply.send({
             error:
@@ -176,10 +181,13 @@ fastify.get("/v1/images/*", (request, reply) => {
 });
 
 async function main() {
-  fastify.listen({ port }, (err, address) => {
-    if (err) throw err;
-    console.log(`Now listening on ${address}`);
-  });
+  fastify.log.info("Server starting");
+  try {
+    await fastify.listen({ port, host: "::" });
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
 }
 
 throng({
