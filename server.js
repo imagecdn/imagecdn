@@ -3,7 +3,6 @@ import throng from "throng";
 import makeFetchHappen from "make-fetch-happen";
 
 import Fastify from "fastify";
-import fastifyMiddie from "@fastify/middie";
 import fastifyRateLimit from "@fastify/rate-limit";
 import fastifyReplyFrom from "@fastify/reply-from";
 
@@ -11,16 +10,15 @@ import Parameters from "./lib/parameters.js";
 import mime from "mime-types";
 import { fileTypeFromBuffer } from "file-type";
 
-import acceptReader from "./lib/connect/acceptReader.js";
-import urlReader from "./lib/connect/urlReader.js";
+import acceptReader from "./lib/decorators/acceptReader.js";
 import transformBuffer from "./lib/transform/transformBuffer.js";
 import compressBuffer from "./lib/compress/compressBuffer.js";
 
 const port = process.env.PORT || 3000;
 const workers = process.env.WEB_CONCURRENCY || 1;
 const logLevel = process.env.LOG_LEVEL || "info";
-const imageRateLimitMax = process.env.IMAGE_RATELIMIT_MAX || 10;
-const imageRateLimitWindow = process.env.IMAGE_RATELIMIT_WINDOW || 1000;
+const imageRateLimitMax = Number(process.env.IMAGE_RATELIMIT_MAX || 10);
+const imageRateLimitWindow = Number(process.env.IMAGE_RATELIMIT_WINDOW || 1000);
 
 const fetch = makeFetchHappen.defaults({
   cacheManager: os.tmpdir(),
@@ -31,14 +29,11 @@ const fastify = Fastify({
     level: logLevel,
   },
 });
-await fastify.register(fastifyMiddie);
+await fastify.register(acceptReader);
 await fastify.register(fastifyRateLimit, {});
 await fastify.register(fastifyReplyFrom, {
   base: "https://imagecdn.github.io",
 });
-
-fastify.use(acceptReader);
-fastify.use(urlReader);
 
 const proxyHandler = () => (request, reply) => {
   const { path } = request;
@@ -83,6 +78,16 @@ fastify.get(
           const { origin } = new URL(imageUri);
           return origin;
         },
+
+        errorResponseBuilder: function (request, context) {
+          return {
+            statusCode: 429,
+            error: "Too Many Requests",
+            message: `This origin has exceeded our generous fair usage allowance. To increase your quota, please email imagecdn.support@imagecdn.app`,
+            date: Date.now(),
+            expiresIn: context.ttl,
+          };
+        },
       },
     },
   },
@@ -120,7 +125,7 @@ fastify.get(
             if (ext === "jpg" || ext === "webp") {
               parameters.format = "jpg";
               if (request.alternativeFormats.has("jpg")) {
-                parameters.format = req.alternativeFormats.get("jpg");
+                parameters.format = request.alternativeFormats.get("jpg");
               }
 
               //

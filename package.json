@@ -24,12 +24,12 @@
   },
   "homepage": "https://github.com/imagecdn/imagecdn#readme",
   "dependencies": {
-    "@fastify/middie": "^8.3.0",
     "@fastify/rate-limit": "^9.1.0",
     "@fastify/reply-from": "^9.7.0",
     "cwebp-bin": "^8.0.0",
     "execa": "^8.0.0",
     "fastify": "^4.26.1",
+    "fastify-plugin": "^4.5.1",
     "file-type": "^19.0.0",
     "image-type": "^5.2.0",
     "is-jpg": "^3.0.0",
