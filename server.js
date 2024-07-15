@@ -28,6 +28,7 @@ const fastify = Fastify({
   logger: {
     level: logLevel,
   },
+  maxParamLength: 1024,
 });
 await fastify.register(acceptReader);
 await fastify.register(fastifyRateLimit, {});
