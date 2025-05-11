@@ -2,6 +2,7 @@ import os from "os";
 import throng from "throng";
 import Redis from "ioredis";
 import makeFetchHappen from "make-fetch-happen";
+import tldExtract from "tld-extract";
 
 import Fastify from "fastify";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -95,14 +96,19 @@ fastify.get(
         keyGenerator: function (request) {
           const { imageUri } = request.params;
           const { origin } = new URL(imageUri);
-          return origin;
+          const { domain } = tldExtract(origin, {
+            allowPrivateTLD: true,
+            allowUnknownTLD: true,
+            allowDotlessTLD: true,
+          });
+          return domain;
         },
 
         errorResponseBuilder: function (request, context) {
           return {
             statusCode: 429,
             error: "Too Many Requests",
-            message: `This origin has exceeded our generous fair usage allowance. To increase your quota, please email imagecdn.support@imagecdn.app`,
+            message: `This domain has exceeded our generous fair usage allowance. To increase your quota, please email imagecdn.support@imagecdn.app`,
             date: Date.now(),
             expiresIn: context.ttl,
           };

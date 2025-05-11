@@ -40,7 +40,8 @@
     "mozjpeg": "^8.0.0",
     "pngquant-bin": "^8.0.1",
     "sharp": "^0.33.2",
-    "throng": "^5.0.0"
+    "throng": "^5.0.0",
+    "tld-extract": "^2.1.0"
   },
   "devDependencies": {
     "chai": "^5.1.0",
