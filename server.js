@@ -1,5 +1,6 @@
 import os from "os";
 import throng from "throng";
+import Redis from "ioredis";
 import makeFetchHappen from "make-fetch-happen";
 
 import Fastify from "fastify";
@@ -19,6 +20,20 @@ const workers = process.env.WEB_CONCURRENCY || 1;
 const logLevel = process.env.LOG_LEVEL || "info";
 const imageRateLimitMax = Number(process.env.IMAGE_RATELIMIT_MAX || 10);
 const imageRateLimitWindow = Number(process.env.IMAGE_RATELIMIT_WINDOW || 1000);
+const imageRateLimitRedisUrl = process.env.REDIS_URL || undefined;
+
+const imageRateLimitRedisConfig = {
+  connectionName: "imagecdn-image-rate-limit-redis",
+  connectTimeout: 500,
+  maxRetriesPerRequest: 1,
+  tls: {
+    rejectUnauthorized: false, // 2025 and this still isn't fixed: bodes well, bodes well.
+  },
+};
+const imageRateLimitRedisClient =
+  imageRateLimitRedisUrl !== undefined
+    ? new Redis(imageRateLimitRedisUrl, imageRateLimitRedisConfig)
+    : null;
 
 const fetch = makeFetchHappen.defaults({
   cacheManager: os.tmpdir(),
@@ -72,6 +87,9 @@ fastify.get(
       rateLimit: {
         max: imageRateLimitMax,
         window: imageRateLimitWindow,
+
+        // persist redis
+        redis: imageRateLimitRedisClient || undefined,
 
         // restrict unknown origins
         keyGenerator: function (request) {

@@ -32,6 +32,7 @@
     "fastify-plugin": "^4.5.1",
     "file-type": "^19.0.0",
     "image-type": "^5.2.0",
+    "ioredis": "^5.6.1",
     "is-jpg": "^3.0.0",
     "is-png": "^3.0.0",
     "make-fetch-happen": "^13.0.0",
