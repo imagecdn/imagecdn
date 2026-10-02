@@ -1,0 +1,23 @@
+images: 6 from acceptance/bench-images/
+service: node server.js
+runs: 20 per row, sequential, width=1200
+
+image                          format   p50 ms   p95 ms    bytes
+bat.png                           jpg      141      158    33573
+bat.png                          webp      221      257    86948
+bat.png                           png      176      183   110665
+fruit-chart.png                   jpg      148      152    96466
+fruit-chart.png                  webp      168      172    86430
+fruit-chart.png                   png      230      271   138398
+iss-india-night.jpg               jpg      143      152    85386
+iss-india-night.jpg              webp      222      230   112924
+iss-india-night.jpg               png      358      375   635381
+marmolada.jpg                     jpg      182      191   135255
+marmolada.jpg                    webp      216      224   163888
+marmolada.jpg                     png      455      551   563937
+marmolada.webp                    jpg      221      251   128381
+marmolada.webp                   webp      257      263   154312
+marmolada.webp                    png      466      519   557001
+peablue.jpg                       jpg      126      128    66094
+peablue.jpg                      webp      172      199    68034
+peablue.jpg                       png      489      511   446384

@@ -1,0 +1,52 @@
+not ok 1 - marks images as cacheable by browsers and shared caches # TODO phase 1: Cache-Control comma
+ok 2 - allows cross-origin use of images
+ok 3 - varies on Accept when the format depends on it
+not ok 4 - does not vary on Accept when the format is given # TODO phase 2: CDN cache key
+ok 5 - jpg: output is smaller than the source
+ok 6 - webp: output is smaller than the source
+ok 7 - png: output is smaller than the source
+ok 8 - jpg: a lower quality gives a smaller file
+not ok 9 - webp: a lower quality gives a smaller file # TODO phase 2: WebP low and medium are identical
+ok 10 - png: a lower quality gives a smaller file
+ok 11 - jpg: default quality stays close to the source
+ok 12 - webp: default quality stays close to the source
+ok 13 - png: default quality stays close to the source
+not ok 14 - png: quality=lossless keeps every pixel # TODO phase 2: lossless output is lossy
+not ok 15 - webp: quality=lossless keeps every pixel # TODO phase 2: lossless output is lossy
+ok 16 - strips metadata from the output
+not ok 17 - returns 404 when the origin returns 404 # TODO phase 1: error codes
+not ok 18 - returns 400 for a source that is not a URL # TODO phase 1: error codes
+not ok 19 - returns 415 for a source that is not an image # TODO phase 1: error codes
+ok 20 - serves a source below the size limit
+not ok 21 - gives up on an origin that is slower than the timeout # TODO phase 1: resource limits
+not ok 22 - rejects a source above the size limit # TODO phase 1: resource limits
+not ok 23 - rejects a source above the size limit sent without a length # TODO phase 1: resource limits
+not ok 24 - rejects a width above the limit # TODO phase 1: resource limits
+not ok 25 - rejects a height above the limit # TODO phase 1: resource limits
+not ok 26 - ignores a uri in the query string # TODO phase 1: parameter allowlist
+not ok 27 - rejects format=html # TODO phase 1: parameter allowlist
+not ok 28 - rejects format=bogus # TODO phase 1: parameter allowlist
+not ok 29 - rejects fit=bogus # TODO phase 1: parameter allowlist
+not ok 30 - rejects quality=bogus # TODO phase 1: parameter allowlist
+ok 31 - limits requests above the maximum
+not ok 32 - allows requests again after the window # TODO phase 1: rate-limit config
+not ok 33 - does not limit the health check # TODO phase 1: rate-limit config
+ok 34 - resizes a JPEG by width and keeps the aspect ratio
+ok 35 - resizes to exact dimensions with fit=cover
+ok 36 - keeps a PNG source as PNG
+ok 37 - serves a WebP source as JPEG to clients that do not accept WebP
+ok 38 - serves a JPEG source as WebP to clients that accept WebP
+ok 39 - converts to the format given in the query string
+ok 40 - rasterises an SVG source when a format is given
+not ok 41 - accepts an SVG source without a format # TODO phase 2: SVG without format
+not ok 42 - multiplies the dimensions by dpr # TODO phase 2: dpr is not implemented
+ok 43 - health check reports OK and is not cacheable
+ok 44 - redirects v1 image URLs to v2
+not ok 45 - does not fetch from an origin that is not allowed # TODO phase 1: SSRF filtering
+not ok 46 - does not follow a redirect to a blocked origin # TODO phase 1: SSRF filtering
+not ok 47 - rejects the cloud metadata address without waiting # TODO phase 1: SSRF filtering
+not ok 48 - rejects a URL that is not http or https # TODO phase 1: SSRF filtering
+# tests 48
+# pass 22
+# fail 0
+# todo 26
