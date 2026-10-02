@@ -31,8 +31,6 @@
     "execa": "^8.0.0",
     "fastify": "^4.26.1",
     "fastify-plugin": "^4.5.1",
-    "file-type": "^19.0.0",
-    "image-type": "^5.2.0",
     "ioredis": "^5.6.1",
     "is-jpg": "^3.0.0",
     "is-png": "^3.0.0",
@@ -40,7 +38,7 @@
     "mime-types": "^2.1.35",
     "mozjpeg": "^8.0.0",
     "pngquant-bin": "^8.0.1",
-    "sharp": "^0.33.2",
+    "sharp": "^0.35.5",
     "throng": "^5.0.0",
     "tld-extract": "^2.1.0"
   },
@@ -50,9 +48,9 @@
     "nodemon": "^3.0.3"
   },
   "volta": {
-    "node": "18.19.0"
+    "node": "22.23.1"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   }
 }
