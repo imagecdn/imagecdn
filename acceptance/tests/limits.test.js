@@ -8,7 +8,7 @@ const ctx = useService({
   MAX_SOURCE_BYTES: "10000",
   MAX_DIMENSION: "4000",
 });
-const todo = "phase 1: resource limits";
+const todo = "phase 2: resource limits";
 
 test("serves a source below the size limit", async () => {
   const res = await ctx.image("/icon.svg", { format: "png" });

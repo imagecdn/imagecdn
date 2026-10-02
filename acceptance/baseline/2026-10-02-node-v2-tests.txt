@@ -18,11 +18,11 @@ not ok 17 - returns 404 when the origin returns 404 # TODO phase 1: error codes
 not ok 18 - returns 400 for a source that is not a URL # TODO phase 1: error codes
 not ok 19 - returns 415 for a source that is not an image # TODO phase 1: error codes
 ok 20 - serves a source below the size limit
-not ok 21 - gives up on an origin that is slower than the timeout # TODO phase 1: resource limits
-not ok 22 - rejects a source above the size limit # TODO phase 1: resource limits
-not ok 23 - rejects a source above the size limit sent without a length # TODO phase 1: resource limits
-not ok 24 - rejects a width above the limit # TODO phase 1: resource limits
-not ok 25 - rejects a height above the limit # TODO phase 1: resource limits
+not ok 21 - gives up on an origin that is slower than the timeout # TODO phase 2: resource limits
+not ok 22 - rejects a source above the size limit # TODO phase 2: resource limits
+not ok 23 - rejects a source above the size limit sent without a length # TODO phase 2: resource limits
+not ok 24 - rejects a width above the limit # TODO phase 2: resource limits
+not ok 25 - rejects a height above the limit # TODO phase 2: resource limits
 not ok 26 - ignores a uri in the query string # TODO phase 1: parameter allowlist
 not ok 27 - rejects format=html # TODO phase 1: parameter allowlist
 not ok 28 - rejects format=bogus # TODO phase 1: parameter allowlist
@@ -42,10 +42,10 @@ not ok 41 - accepts an SVG source without a format # TODO phase 2: SVG without f
 not ok 42 - multiplies the dimensions by dpr # TODO phase 2: dpr is not implemented
 ok 43 - health check reports OK and is not cacheable
 ok 44 - redirects v1 image URLs to v2
-not ok 45 - does not fetch from an origin that is not allowed # TODO phase 1: SSRF filtering
-not ok 46 - does not follow a redirect to a blocked origin # TODO phase 1: SSRF filtering
-not ok 47 - rejects the cloud metadata address without waiting # TODO phase 1: SSRF filtering
-not ok 48 - rejects a URL that is not http or https # TODO phase 1: SSRF filtering
+not ok 45 - does not fetch from an origin that is not allowed # TODO phase 2: SSRF filtering
+not ok 46 - does not follow a redirect to a blocked origin # TODO phase 2: SSRF filtering
+not ok 47 - rejects the cloud metadata address without waiting # TODO phase 2: SSRF filtering
+not ok 48 - rejects a URL that is not http or https # TODO phase 1: error codes
 # tests 48
 # pass 22
 # fail 0

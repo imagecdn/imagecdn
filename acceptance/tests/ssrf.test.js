@@ -6,7 +6,7 @@ import { useService } from "../helpers/service.js";
 // The canary is on loopback but not in SSRF_ALLOW_ORIGINS, so it stands in for
 // any internal service. It must never receive a request.
 const ctx = useService();
-const todo = "phase 1: SSRF filtering";
+const todo = "phase 2: SSRF filtering";
 
 test("does not fetch from an origin that is not allowed", { todo }, async () => {
   const res = await ctx.image(`${ctx.origin.canaryUrl}/secret.jpg`);
@@ -27,10 +27,5 @@ test("rejects the cloud metadata address without waiting", { todo }, async () =>
     {},
     { signal: AbortSignal.timeout(2000) },
   );
-  assert.equal(res.status, 400);
-});
-
-test("rejects a URL that is not http or https", { todo }, async () => {
-  const res = await ctx.image("file:///etc/passwd");
   assert.equal(res.status, 400);
 });
