@@ -10,7 +10,7 @@ import fastifyReplyFrom from "@fastify/reply-from";
 
 import Parameters from "./lib/parameters.js";
 import mime from "mime-types";
-import { fileTypeFromBuffer } from "file-type";
+import sharp from "sharp";
 
 import acceptReader from "./lib/decorators/acceptReader.js";
 import transformBuffer from "./lib/transform/transformBuffer.js";
@@ -52,6 +52,14 @@ await fastify.register(fastifyReplyFrom, {
   base: "https://imagecdn.github.io",
 });
 
+const isHttpUrl = (uri) => {
+  try {
+    return ["http:", "https:"].includes(new URL(uri).protocol);
+  } catch (err) {
+    return false;
+  }
+};
+
 const proxyHandler = () => (request, reply) => {
   const { path } = request;
   return reply.from(path, {
@@ -84,6 +92,17 @@ fastify.get("/v2/health", function (request, reply) {
 fastify.get(
   "/v2/image/:imageUri",
   {
+    // Runs before the rate limiter, whose key generator needs a valid URL.
+    onRequest: function (request, reply, done) {
+      if (!isHttpUrl(request.params.imageUri)) {
+        reply.status(400);
+        reply.send({
+          error: "The image URL must be an absolute http or https URL.",
+        });
+        return;
+      }
+      done();
+    },
     config: {
       rateLimit: {
         max: imageRateLimitMax,
@@ -128,72 +147,92 @@ fastify.get(
       ),
     );
 
-    return (
-      fetch(parameters.uri, {
+    let res;
+    try {
+      res = await fetch(parameters.uri, {
         cache: "force-cache",
-      })
-        .catch((err) => {
-          request.log.error(err);
-          reply.status(404);
-          return reply.send({
-            error: "Image not found.",
-          });
-        })
+      });
+    } catch (err) {
+      request.log.error(err);
+      reply.status(404);
+      return reply.send({
+        error: "Image not found.",
+      });
+    }
 
-        .then((res) => res.buffer())
-        .then(async (buffer) => {
-          if (!parameters.format) {
-            const { ext } = await fileTypeFromBuffer(buffer);
+    if (res.status === 404) {
+      reply.status(404);
+      return reply.send({
+        error: "Image not found.",
+      });
+    }
+    if (!res.ok) {
+      reply.status(502);
+      return reply.send({
+        error: `The image origin returned an error (${res.status}).`,
+      });
+    }
 
-            // We treat WebP and JPG as one and the same.
-            // This allows older browsers to be served the right image format.
-            if (ext === "jpg" || ext === "webp") {
-              parameters.format = "jpg";
-              if (request.alternativeFormats.has("jpg")) {
-                parameters.format = request.alternativeFormats.get("jpg");
-              }
+    try {
+      const buffer = await res.buffer();
 
-              //
-            } else if (ext === "png") {
-              parameters.format = "png";
-            }
+      let sourceFormat;
+      try {
+        ({ format: sourceFormat } = await sharp(buffer).metadata());
+      } catch (err) {
+        reply.status(415);
+        return reply.send({
+          error: "The source is not a supported image.",
+        });
+      }
+
+      if (!parameters.format) {
+        // We treat WebP and JPG as one and the same.
+        // This allows older browsers to be served the right image format.
+        if (sourceFormat === "jpeg" || sourceFormat === "webp") {
+          parameters.format = "jpg";
+          if (request.alternativeFormats.has("jpg")) {
+            parameters.format = request.alternativeFormats.get("jpg");
           }
-          return buffer;
-        })
-        .then((buffer) => transformBuffer(parameters)(buffer))
-        .then((buffer) => compressBuffer(parameters)(buffer))
-        .then((image) => {
-          reply.header("Content-Length", image.byteLength);
-          reply.header("Content-Type", mime.contentType(parameters.format));
-          reply.header("ICDN-Format", parameters.format);
 
-          // Instruct upstream proxies to cache this for a month.
-          const cacheTtl = 60 * 60 * 24 * 30;
-          reply.header(
-            "Cache-Control",
-            `public, max-age=${cacheTtl} s-maxage=${cacheTtl}`,
-          );
-          reply.header(
-            "Expires",
-            new Date(Date.now() + cacheTtl * 1000).toUTCString(),
-          );
+          // SVG is rasterised, as it cannot be resized or compressed here.
+        } else if (sourceFormat === "png" || sourceFormat === "svg") {
+          parameters.format = "png";
+        }
+      }
 
-          // Allow CORS from everywhere for more advanced image use-cases.
-          reply.header("Access-Control-Allow-Origin", "*");
+      const image = await compressBuffer(parameters)(
+        await transformBuffer(parameters)(buffer),
+      );
 
-          return reply.send(image);
-        })
+      reply.header("Content-Length", image.byteLength);
+      reply.header("Content-Type", mime.contentType(parameters.format));
+      reply.header("ICDN-Format", parameters.format);
 
-        // Generic error handling.
-        .catch((err) => {
-          request.log.error(err);
-          reply.status(503);
-          return reply.send({
-            error:
-              "An unexpected error occurred, if the issue persists please get in touch with imagecdn.support@imagecdn.app",
-          });
-        })
-    );
+      // Instruct upstream proxies to cache this for a month.
+      const cacheTtl = 60 * 60 * 24 * 30;
+      reply.header(
+        "Cache-Control",
+        `public, max-age=${cacheTtl} s-maxage=${cacheTtl}`,
+      );
+      reply.header(
+        "Expires",
+        new Date(Date.now() + cacheTtl * 1000).toUTCString(),
+      );
+
+      // Allow CORS from everywhere for more advanced image use-cases.
+      reply.header("Access-Control-Allow-Origin", "*");
+
+      return reply.send(image);
+    } catch (err) {
+      // Generic error handling.
+      request.log.error(err);
+      reply.status(503);
+      return reply.send({
+        error:
+          "An unexpected error occurred, if the issue persists please get in touch with imagecdn.support@imagecdn.app",
+      });
+    }
   },
 );
 // Handle redirects from /v1/ service to /v2/

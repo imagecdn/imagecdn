@@ -73,14 +73,12 @@ test("rasterises an SVG source when a format is given", async () => {
   });
 });
 
-test(
-  "accepts an SVG source without a format",
-  { todo: "phase 2: SVG without format" },
-  async () => {
-    const res = await ctx.image("/icon.svg", { width: 200 });
-    assert.equal(res.status, 200);
-  },
-);
+test("rasterises an SVG source to PNG when no format is given", async () => {
+  const res = await ctx.image("/icon.svg", { width: 200 });
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("content-type"), "image/png");
+  assert.equal((await metadataOf(res)).format, "png");
+});
 
 test(
   "multiplies the dimensions by dpr",
