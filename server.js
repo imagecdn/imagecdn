@@ -1,5 +1,4 @@
 import os from "os";
-import throng from "throng";
 import Redis from "ioredis";
 import makeFetchHappen from "make-fetch-happen";
 import tldExtract from "tld-extract";
@@ -17,7 +16,6 @@ import transformBuffer from "./lib/transform/transformBuffer.js";
 import compressBuffer from "./lib/compress/compressBuffer.js";
 
 const port = process.env.PORT || 3000;
-const workers = process.env.WEB_CONCURRENCY || 1;
 const logLevel = process.env.LOG_LEVEL || "info";
 const imageRateLimitMax = Number(process.env.IMAGE_RATELIMIT_MAX || 10);
 const imageRateLimitWindow = Number(process.env.IMAGE_RATELIMIT_WINDOW || 1000);
@@ -259,8 +257,4 @@ async function main() {
   }
 }
 
-throng({
-  workers,
-  lifetime: Infinity,
-  worker: main,
-});
+await main();
