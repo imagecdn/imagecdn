@@ -15,6 +15,10 @@ import acceptReader from "./lib/decorators/acceptReader.js";
 import transformBuffer from "./lib/transform/transformBuffer.js";
 import compressBuffer from "./lib/compress/compressBuffer.js";
 
+// Every request has a different source, so libvips' operation cache only
+// retains the last requests' pixels. Release them as each pipeline finishes.
+sharp.cache(false);
+
 const port = process.env.PORT || 3000;
 const logLevel = process.env.LOG_LEVEL || "info";
 const imageRateLimitMax = Number(process.env.IMAGE_RATELIMIT_MAX || 10);
